@@ -40,6 +40,7 @@ const Index = () => {
     { row: 3, col: 2, player: "" },
     { row: 3, col: 3, player: "" },
   ];
+  const [isWonbyRow, setIsWonbyRow] = useState<boolean>(false);
   const [dataGrid, setDataGrid] = useState<dataGridInterface[]>(data);
   const [openDialog, setOpenDialog] = React.useState(false);
   const onCheckBoxChange = (inputData: dataGridInterface, index: number) => {
@@ -55,22 +56,47 @@ const Index = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setDataGrid(data);
+    setIsWonbyRow(false);
   };
+
+  const checkWin = (t: _.Dictionary<dataGridInterface[]>) => {
+    _.map(t, function (r: dataGridInterface[]) {
+      console.log(
+        _.filter(r, function (d) {
+          return d.player === "a";
+        }).length
+      );
+      // console.log(_.countBy(r, 'player'));
+      // const p = _.countBy(r, 'player');
+      if (
+        _.filter(r, function (d) {
+          return d.player === "a";
+        }).length === 3
+      ) {
+        setIsWonbyRow(true);
+      }
+    });
+  }
 
   useEffect(() => {
     //console.log("🚀 ~ file: Board.tsx ~ line 49 ~ Index ~ dataGrid", dataGrid);
+    const playerClick = _.filter(dataGrid, function (d) {
+      return d.player === "a";
+    });
 
-    const playerClick = _.filter(dataGrid, { player: "a" });
-    console.log(
-      "🚀 ~ file: Board.tsx ~ line 64 ~ playerClick ~ playerClick",
-      playerClick.length,
-      playerClick
-    );
-
-    if (playerClick.length === 3) {
-      setOpenDialog(true);
+    if (playerClick.length >= 3) {
+      //check row
+      // console.log(_.groupBy(playerClick, 'row'));
+      const row = _.groupBy(playerClick, "row");
+      checkWin(row);
+      const col = _.groupBy(playerClick, "col");
+      checkWin(col);
     }
   }, [dataGrid]);
+
+  useEffect(() => {
+    if (isWonbyRow) setOpenDialog(true);
+  }, [isWonbyRow]);
 
   return (
     <>
