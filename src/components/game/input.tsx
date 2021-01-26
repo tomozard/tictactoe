@@ -3,12 +3,12 @@ import React from "react";
 //MUI
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox, { CheckboxProps } from "@material-ui/core/Checkbox";
+import Checkbox from "@material-ui/core/Checkbox";
 import CloseIcon from "@material-ui/icons/Close";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 //Interface
-import { dataGridInterface, Player } from "../game/board";
+import { dataGridInterface, Player } from "./interface";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,12 +36,12 @@ function Index(props: any) {
       control={
         <Checkbox
           className={classes.root}
-          icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 100 }} />}
+          icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 80 }} />}
           checkedIcon={
             data.player === Player.A ? (
               <CloseIcon style={{ fontSize: 100 }} />
             ) : (
-              <RadioButtonUncheckedIcon style={{ fontSize: 100 }} />
+              <RadioButtonUncheckedIcon style={{ fontSize: 80 }} />
             )
           }
           name="checked"

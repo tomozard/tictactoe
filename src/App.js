@@ -1,18 +1,17 @@
 //React
-import React, { useState } from "react";
+import React from "react";
 //MUI
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 //Component
-import Board from "./components/game/board";
+import GameContainer from "./components/game/container";
 
 function App() {
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container maxWidth="sm">
-        <Board/>
+      <Container maxWidth="md">
+        <GameContainer/>
       </Container>
     </React.Fragment>
   );

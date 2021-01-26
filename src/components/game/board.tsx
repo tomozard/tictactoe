@@ -1,142 +1,76 @@
 //React
-import React, { useState, useEffect } from "react";
-//Package
-import _ from "lodash";
+import React from "react";
 //MUI
-import Box from '@material-ui/core/Box';
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import GridList from "@material-ui/core/GridList";
+import GridListTile from "@material-ui/core/GridListTile";
+import Button from "@material-ui/core/Button";
 //Component
 import Input from "./input";
 import Dialog from "./dialog";
+//Styles
+import { gridStyle, gridRightestStyle, gridBottomStyle } from "./styles";
+//Interface,Enum
+import { dataGridInterface, Player } from "./interface";
 
-export interface dataGridInterface {
-  row: number;
-  col: number;
-  player: string;
-}
-
-export enum Player {
-  A = "X",
-  B = "O",
-}
-
-const gridStyle: React.CSSProperties = {
-  textAlign: "center",
-  borderBottom: "1px solid #dddddd",
-  borderRight: "1px solid #dddddd",
-};
-
-const gridRightestStyle: React.CSSProperties = {
-  borderRight: "0",
-};
-
-const gridBottomStyle: React.CSSProperties = {
-  borderBottom: "0",
-};
-
-const Index = () => {
-  const data: dataGridInterface[] = [
-    { row: 1, col: 1, player: "" },
-    { row: 1, col: 2, player: "" },
-    { row: 1, col: 3, player: "" },
-    { row: 2, col: 1, player: "" },
-    { row: 2, col: 2, player: "" },
-    { row: 2, col: 3, player: "" },
-    { row: 3, col: 1, player: "" },
-    { row: 3, col: 2, player: "" },
-    { row: 3, col: 3, player: "" },
-  ];
-  const [winner, setWinner] = useState<string>("");
-  const [dataGrid, setDataGrid] = useState<dataGridInterface[]>(data);
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [activePlayer, setActivePlayer] = React.useState(Player.A);
-  const onCheckBoxChange = (inputData: dataGridInterface, index: number) => {
-    let selectData = dataGrid[index];
-    if (selectData.player === "") {
-      dataGrid[index] = { ...selectData, player: activePlayer };
-      if (activePlayer === Player.A) {
-        setActivePlayer(Player.B);
-      } else if (activePlayer === Player.B) {
-        setActivePlayer(Player.A);
-      }
-    }
-    setDataGrid([...dataGrid]);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setDataGrid(data);
-    setWinner("");
-  };
-
-  const checkWin = (t: _.Dictionary<dataGridInterface[]>) => {
-    _.map(t, function (r: dataGridInterface[]) {
-      r.length === 3 && setWinner(r[0].player);
-    });
-  };
-
-  useEffect(() => {
-    const allPlayerClick = _.filter(dataGrid, function (d) {
-      return d.player !== "";
-    });
-    const playerData = _.groupBy(allPlayerClick, "player");
-
-    _.map(playerData, (playerDataGrid) => {
-      if (playerDataGrid.length >= 3) {
-        const row = _.groupBy(playerDataGrid, "row");
-        checkWin(row);
-        const col = _.groupBy(playerDataGrid, "col");
-        checkWin(col);
-        const slash = _.filter(playerDataGrid, function(p) {
-          return  (p.col + p.row === 3+1)
-        });
-        checkWin({'':slash});
-        const backslash = _.filter(playerDataGrid, function(p) {
-          return  p.col === p.row
-        });
-        // console.log("🚀 ~ file: Board.tsx ~ line 98 ~ backslash ~ backslash", backslash)
-        checkWin({'': backslash});
-      }
-    });
-  }, [dataGrid]);
-
-  useEffect(() => {
-    if (winner !== "") setOpenDialog(true);
-  }, [winner]);
-
+const Index = (props: any) => {
+  const activePlayer: Player = props.activePlayer;
+  const boardSquare: string = props.boardSquare;
+  const onCheckBoxChange: (
+    inputData: dataGridInterface,
+    index: number
+  ) => void = props.onCheckBoxChange;
+  const openDialog: boolean = props.openDialog;
+  const handleCloseDialog: () => void = props.handleCloseDialog;
+  const winner: string = props.winner;
+  const dataGrid: dataGridInterface[] = props.dataGrid;
   return (
-    <Box component="div" pt={4} pb={4}>
-      <Typography variant="h3" gutterBottom>
-        Turn : {activePlayer}
-      </Typography>
-      <Grid container spacing={2} justify="center" alignItems="center">
-        {dataGrid.map((d: dataGridInterface, index: number) => {
-          let setGridStyle = { ...gridStyle };
-          if (d.col === 3) {
-            setGridStyle = { ...setGridStyle, ...gridRightestStyle };
-          }
-          if (d.row === 3) {
-            setGridStyle = { ...setGridStyle, ...gridBottomStyle };
-          }
-          return (
-            <Grid item xs={4} style={{ ...setGridStyle }} key={index}>
-              <Input
-                data={d}
-                index={index}
-                onCheckBoxChange={onCheckBoxChange}
-                activePlayer={activePlayer}
-              ></Input>
-            </Grid>
-          );
-        })}
+    <Grid container spacing={2} justify="center">
+      <Grid item xs={12}>
+        <Typography variant="h3" gutterBottom>
+          Turn : {activePlayer}
+        </Typography>
+        <GridList cellHeight="auto" cols={Number(boardSquare)}>
+          {dataGrid.map((d: dataGridInterface, index: number) => {
+            let setGridStyle = { ...gridStyle };
+            if (d.col === Number(boardSquare)) {
+              setGridStyle = { ...setGridStyle, ...gridRightestStyle };
+            }
+            if (d.row === Number(boardSquare)) {
+              setGridStyle = { ...setGridStyle, ...gridBottomStyle };
+            }
+            return (
+              <GridListTile key={index} cols={1} style={{ ...setGridStyle }}>
+                <Input
+                  data={d}
+                  index={index}
+                  onCheckBoxChange={onCheckBoxChange}
+                  activePlayer={activePlayer}
+                ></Input>
+              </GridListTile>
+            );
+          })}
+        </GridList>
+        <Dialog
+          open={openDialog}
+          handleClose={handleCloseDialog}
+          winner={winner}
+        />
       </Grid>
-      <Dialog
-        open={openDialog}
-        handleClose={handleCloseDialog}
-        winner={winner}
-      />
-    </Box>
+
+      <Grid item xs={2}>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          fullWidth={true}
+          onClick={handleCloseDialog}
+        >
+          Reset
+        </Button>
+      </Grid>
+    </Grid>
   );
 };
 
