@@ -17,8 +17,8 @@ export interface dataGridInterface {
 }
 
 export enum Player {
-  A = "A",
-  B = "B",
+  A = "X",
+  B = "O",
 }
 
 const gridStyle: React.CSSProperties = {
@@ -85,10 +85,18 @@ const Index = () => {
     _.map(playerData, (playerDataGrid) => {
       if (playerDataGrid.length >= 3) {
         const row = _.groupBy(playerDataGrid, "row");
-        console.log("🚀 ~ file: Board.tsx ~ line 110 ~ _.map ~ row", row);
         checkWin(row);
         const col = _.groupBy(playerDataGrid, "col");
         checkWin(col);
+        const slash = _.filter(playerDataGrid, function(p) {
+          return  (p.col + p.row === 3+1)
+        });
+        checkWin({'':slash});
+        const backslash = _.filter(playerDataGrid, function(p) {
+          return  p.col === p.row
+        });
+        // console.log("🚀 ~ file: Board.tsx ~ line 98 ~ backslash ~ backslash", backslash)
+        checkWin({'': backslash});
       }
     });
   }, [dataGrid]);
